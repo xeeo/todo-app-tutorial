@@ -2,7 +2,11 @@ const express = require("express");
 const app = express();
 
 const PORT = process.env.PORT || 8000;
-const DB_CONNECTION = process.env.DB_CONNECTION || 'postgres://itec21user:itec21pass@database-1.cluster-coafmgay0em0.eu-central-1.rds.amazonaws.com:5432/postgres';
+const DB_HOST = process.env.DB_HOST || 'database-1.cluster-coafmgay0em0.eu-central-1.rds.amazonaws.com';
+const DB_PORT = process.env.DB_PORT || '5432';
+const DB_USER = process.env.DB_USER || 'itec21user';
+const DB_PASSWORD = process.env.DB_PASSWORD || 'itec21pass';
+const DB_DATABASE = process.env.DB_DATABASE || 'postgres';
 
 const cors = require("cors");
 const postgres = require('postgres');
@@ -16,7 +20,13 @@ const success = (res, payload) => {
 };
 
 const dbConnector = async (req, res, next) => {
-  req.sql = postgres(DB_CONNECTION);
+  req.sql = postgres({
+    host: DB_HOST,
+    port: DB_PORT,
+    database: DB_DATABASE,
+    username: DB_USER,
+    password: DB_PASSWORD
+  });
 
   next();
 };
