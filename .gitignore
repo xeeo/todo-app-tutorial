@@ -1,2 +1,2 @@
-data/*
-!data/.keepme
+postgres/data/*
+!postgres/data/.keepme

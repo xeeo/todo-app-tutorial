@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BACKEND_PORT = process.env.REACT_APP_BACKEND_PORT || 3000;
+const BACKEND_PORT = process.env.REACT_APP_BACKEND_PORT || 8000;
 const BACKEND_HOST = process.env.REACT_APP_BACKEND_HOST || 'localhost';
 
 const API_URL=`http://${BACKEND_HOST}:${BACKEND_PORT}/todos/`

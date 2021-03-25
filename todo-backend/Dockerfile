@@ -1,6 +1,6 @@
 FROM node:14-slim
 
-ENV PORT=3000
+ENV PORT=8000
 # sets the current working directory
 WORKDIR /app  
 
