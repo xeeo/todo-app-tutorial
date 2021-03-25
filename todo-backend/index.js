@@ -7,7 +7,6 @@ const DB_PORT = process.env.DB_PORT || '5432';
 const DB_USER = process.env.DB_USER || 'itec21user';
 const DB_PASSWORD = process.env.DB_PASSWORD;
 const DB_DATABASE = process.env.DB_DATABASE || 'postgres';
-//const DB_CONNECTION = process.env.DB_CONNECTION || 'postgres://itec21user:itec21pass@database-1.cluster-coafmgay0em0.eu-central-1.rds.amazonaws.com:5432/postgres';
 
 const cors = require("cors");
 const postgres = require('postgres');
