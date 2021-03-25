@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 const PORT = process.env.PORT || 8000;
-const DB_CONNECTION = process.env.DB_CONNECTION || 'postgres://itec2021user:itec2021pass@host:port/database';
+const DB_CONNECTION = process.env.DB_CONNECTION || 'postgres://itec21user:itec21pass@database-1.cluster-coafmgay0em0.eu-central-1.rds.amazonaws.com:5432/postgres';
 
 const cors = require("cors");
 const postgres = require('postgres');
@@ -25,40 +25,58 @@ app.use(dbConnector);
 
 app.get("/todos", async (req, res, next) => {
   try {
-    const todos = await req.sql`select * from todos`;
+    let todos = [];
+    await req.sql`select * from todos`.stream(row => {
+      todos.push({
+        _id: row.id,
+        task: row.body,
+        completed: row.completed
+      })
+    });
     return success(res, todos);
   } catch (err) {
+    console.log(err);
     next({ status: 400, message: "failed to get todos" });
   }
 });
 
 app.post("/todos", async (req, res, next) => {
   try {
+
     const item = {
-      id: uuidv4,
-      body: req.body
+      id: uuidv4(),
+      body: req.body.task,
+      completed: false
     };
 
     const todo = await req.sql`
-      insert into todos ${sql(item, 'id', 'body')}
-    
+      insert into todos ${req.sql(item, 'id', 'body', 'completed')}
       returning *
     `;
-    return success(res, todo);
+
+    return success(res, {
+      _id: todo[0].id,
+      task: todo[0].body,
+      completed: todo[0].completed
+    });
   } catch (err) {
+    console.log(err);
     next({ status: 400, message: "failed to create todo" });
   }
 });
 
 app.put("/todos/:id", async (req, res, next) => {
   try {
-    const todo;
+    const todo = await req.sql`
+      update todos set completed = true where id = ${req.params.id}
+      returning *
+    `;
 
-    await req.sql`select * from todos where id = ${req.params.id}`.stream(row => {
-      todo = row;
+    return success(res, {
+      _id: todo[0].id,
+      task: todo[0].body,
+      completed: todo[0].completed
     });
-
-    return success(res, todo);
   } catch (err) {
     next({ status: 400, message: "failed to update todo" });
   }
@@ -70,6 +88,7 @@ app.delete("/todos/:id", async (req, res, next) => {
 
     return success(res, "todo deleted!");
   } catch (err) {
+    console.log(err);
     next({ status: 400, message: "failed to delete todo" });
   }
 });
