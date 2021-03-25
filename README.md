@@ -4,12 +4,26 @@ docker build -f todo-frontend/Dockerfile -t docker-ws/frontend todo-frontend/
 
 docker images
 
+
+
+docker-compose build
+docker-compose up
+docker-compose up -d
+
+docker-compose stop
+
 docker ps
 
 docker stop/kill
 
-docker-compose build
-docker-compose up
+docker login
 
+docker tag docker-ws/backend docker.io/adinaclaudiatoma/docker-ws-backend:latest
+docker push docker.io/adinaclaudiatoma/docker-ws-backend:latest
 
-https://github.com/docker/awesome-compose/tree/master/react-express-mongodb
+docker tag docker-ws/frontend docker.io/adinaclaudiatoma/docker-ws-frontend:latest
+docker push docker.io/adinaclaudiatoma/docker-ws-frontend:latest
+
+https://hub.docker.com/repository/docker/adinaclaudiatoma/docker-ws-frontend
+https://hub.docker.com/repository/docker/adinaclaudiatoma/docker-ws-backend
+

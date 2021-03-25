@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   frontend:
-    image: docker-ws/frontend
+    image: docker.io/adinaclaudiatoma/docker-ws-frontend:1.0
     build:
       context: todo-frontend
       # backend port needs to be passed as build arg because it's used in the build/compile stage, not at runtime
@@ -17,14 +17,14 @@ services:
       - backend
 
   backend:
-    restart: always
-    image: docker-ws/backend
+    image: docker.io/adinaclaudiatoma/docker-ws-backend:1.0
     build:
       context: todo-backend
     environment:
       PORT: 3333
     ports:
       - 3333:3333
+    restart: always
     depends_on:
       - mongo
     networks:
