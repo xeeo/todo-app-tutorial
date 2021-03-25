@@ -1,50 +1,94 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const PORT = process.env.PORT || 3000;
-const db = require("./models/");
+
+const PORT = process.env.PORT || 8000;
+const DB_CONNECTION = process.env.DB_CONNECTION || 'postgres://itec21user:itec21pass@database-1.cluster-coafmgay0em0.eu-central-1.rds.amazonaws.com:5432/postgres';
+
 const cors = require("cors");
+const postgres = require('postgres');
+const { v4: uuidv4 } = require('uuid');
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-function success(res, payload) {
+const success = (res, payload) => {
   return res.status(200).json(payload);
-}
+};
+
+const dbConnector = async (req, res, next) => {
+  req.sql = postgres(DB_CONNECTION);
+
+  next();
+};
+
+app.use(dbConnector);
 
 app.get("/todos", async (req, res, next) => {
   try {
-    const todos = await db.Todo.find({});
+    let todos = [];
+    await req.sql`select * from todos`.stream(row => {
+      todos.push({
+        _id: row.id,
+        task: row.body,
+        completed: row.completed
+      })
+    });
     return success(res, todos);
   } catch (err) {
+    console.log(err);
     next({ status: 400, message: "failed to get todos" });
   }
 });
 
 app.post("/todos", async (req, res, next) => {
   try {
-    const todo = await db.Todo.create(req.body);
-    return success(res, todo);
+
+    const item = {
+      id: uuidv4(),
+      body: req.body.task,
+      completed: false
+    };
+
+    const todo = await req.sql`
+      insert into todos ${req.sql(item, 'id', 'body', 'completed')}
+      returning *
+    `;
+
+    return success(res, {
+      _id: todo[0].id,
+      task: todo[0].body,
+      completed: todo[0].completed
+    });
   } catch (err) {
+    console.log(err);
     next({ status: 400, message: "failed to create todo" });
   }
 });
 
 app.put("/todos/:id", async (req, res, next) => {
   try {
-    const todo = await db.Todo.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
+    const todo = await req.sql`
+      update todos set completed = true where id = ${req.params.id}
+      returning *
+    `;
+
+    return success(res, {
+      _id: todo[0].id,
+      task: todo[0].body,
+      completed: todo[0].completed
     });
-    return success(res, todo);
   } catch (err) {
     next({ status: 400, message: "failed to update todo" });
   }
 });
+
 app.delete("/todos/:id", async (req, res, next) => {
   try {
-    await db.Todo.findByIdAndRemove(req.params.id);
+    await req.sql`delete from todos where id = ${req.params.id}`;
+
     return success(res, "todo deleted!");
   } catch (err) {
+    console.log(err);
     next({ status: 400, message: "failed to delete todo" });
   }
 });
