@@ -25,5 +25,5 @@ jobs:
           application_name: itec21api2
           environment_name: itec21api2-env
           version_label: 12345
-          region: eu-central-1
+          region: ${{ secrets.AWS_REGION }}
           deployment_package: deploy.zip
