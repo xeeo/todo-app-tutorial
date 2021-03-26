@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "database-1.cluster-coafmgay0em0.eu-central-1.rds.amazonaws.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "itec21",
+            "username": "itec21user",
+            "password": "itec21pass",
+            "database": "postgres"
+        }
+    ]
+}
