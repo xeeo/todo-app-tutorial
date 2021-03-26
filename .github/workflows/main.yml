@@ -22,8 +22,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: Itec21api2
-          environment_name: Itec21api2-env
+          application_name: itec21api2
+          environment_name: itec21api2-env
           version_label: 12345
-          region: ${{ secrets.REGION }}
+          region: eu-central-1
           deployment_package: deploy.zip
